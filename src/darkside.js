@@ -15,7 +15,7 @@
       if (active === true) {
         Object.keys(debug).forEach(function (key) {
           debug[key] = function () {
-            console[key].apply(console, arguments);
+            global.console[key].apply(global.console, arguments);
           };
         });
       } else {
@@ -43,7 +43,7 @@
     darkside.module = function (name, dModule) {
       if (dModule === undefined) {
         return modules[name];
-      };
+      }
       modules[name] = dModule;
 
       debug.info('Darkside - Main - Registered module ' + name + '!');
@@ -57,18 +57,15 @@
     var module = {},
       rootScope,
       rootScopeNew,
-      compile,
-      $$addScopeInfo,
       destroyers = [];
 
-    module.init = function ($rootScope, $compile, jQuery) {
-      if (!jQuery || !$rootScope || !$compile || !global.angular || global.angular.version.full !== '1.3.0-rc.0') {
+    module.init = function ($rootScope, jQuery) {
+      if (!jQuery || !$rootScope || !global.angular || global.angular.version.full !== '1.3.0-rc.0') {
         return;
       }
 
       debug.warn('Darkside - AngularJS - This module will override AngularJS\'s new scopes');
 
-      compile = $compile;
       rootScope = $rootScope;
       rootScopeNew = $rootScope.$new;
 
@@ -88,30 +85,16 @@
             if (value && value.data && Object.keys(value.data).length === 0) {
               delete cache[key];
               debug.info('Darkside - AngularJS - Removed cached scope!');
-            };
+            }
           });
 
           destroyer();
           destroyers.splice(destroyers.indexOf(destroyer), 1);
         });
 
-        destroyers.push(
-          destroyer
-        );
+        destroyers.push(destroyer);
 
         return $createdScope;
-      };
-
-      $$addScopeInfo = compile.$$addScopeInfo;
-      if (!$$addScopeInfo) {
-        return;
-      }
-
-      compile.$$addScopeInfo = function ($element, scope) {
-        scope && $element && (scope.___darkside = {
-          $element: $element
-        });
-        $$addScopeInfo.apply(compile, arguments);
       };
 
       debug.info('Darkside - AngularJS - Initialized!');
@@ -123,75 +106,7 @@
         destroyFn();
       });
 
-      compile && (compile.$$addScopeInfo = $$addScopeInfo);
-
       destroyers = null;
-    }
-
-    module.garbageCollector = function () {
-      var ngCache = [];
-      Object.keys(jQuery.cache).forEach(function (key) {
-        var cached = jQuery.cache[key];
-        cached.___key = key;
-        if (cached && cached.data && cached.data.$scope && cached.data.$scope.___darkside) {
-          ngCache.push(cached);
-        }
-      });
-      ngCache.filter(function (cached) {
-        return !cached.data
-          || !cached.data.$scope
-          || !cached.data.$scope.___darkside
-          || !cached.data.$scope.___darkside.$element
-          || !cached.data.$scope.___darkside.$element.length
-          || (function () {
-            var $element = cached.data.$scope.___darkside.$element;
-            return !!Object.keys($element)
-              .filter(function (attr) {
-                return !global.isNaN(attr) && $element[attr] instanceof Element;
-              })
-              .map(function (attr) {
-                return $element[attr];
-              })
-              .filter(function (element) {
-                return !document.contains(element);
-              }).length;
-          }());
-      }).forEach(function (cached) {
-        var key = cached.___key;
-        if (cached.data) {
-          if (cached.data.$scope) {
-            if (cached.data.$scope.___darkside) {
-              var $element = cached.data.$scope.___darkside.$element;
-              Object.keys($element)
-                .filter(function (attr) {
-                  return !global.isNaN(attr) && $element[attr] instanceof Element;
-                })
-                .map(function (attr) {
-                  return $element[attr];
-                })
-                .forEach(function (element) {
-                  element.getEventListeners && element.getEventListeners().forEach(function (options) {
-                    element.removeEventListener(options.type, options.listener, options.useCapture);
-                  });
-                });
-              // $element && $element.remove && $element.remove();
-
-
-              delete cached.data.$scope.___darkside.$element;
-              delete cached.data.$scope.___darkside;
-            }
-
-            debug.info('Darkside - AngularJS - Removed cached elements');
-            // cached.data.$scope.$destroy && cached.data.$scope.$destroy();
-            delete cached.data.$scope;
-          }
-          delete cached.data;
-        }
-        Object.keys(cached).forEach(function (attr) {
-          delete cached[attr];
-        });
-        delete jQuery.cache[key];
-      });
     };
 
     darkside.module('angular', module);
@@ -228,7 +143,7 @@
             delete element.getEventListeners;
           });
         }
-      }
+      };
       // register individual element an returns its corresponding listeners
       var register_element = function (element) {
         if (_elements_.indexOf(element) == -1) {
@@ -363,7 +278,7 @@
           return {
             elements: elements.length,
             listeners: count
-          }
+          };
         }
       };
 

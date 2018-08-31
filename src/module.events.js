@@ -1,4 +1,4 @@
-import ListenerTracker from './listeners';
+import ListenerTracker from './module.listeners';
 
 export default class Events {
   constructor(global, debug) {
@@ -60,11 +60,13 @@ export default class Events {
       };
     };
 
-    return () => ({
+    const summary = () => ({
       elements: elements(),
       listeners: listeners(),
       detached: detached()
-    })();
+    });
+
+    return summary();
   }
 
   elements() {

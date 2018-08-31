@@ -23,12 +23,12 @@ ___darkside.debug(true|false)
 
 #### Call a module
 ```js
-___darkside.module('#MODULE_NAME')
+___darkside.modules.#MODULE_NAME
 ```
 
 #### Register a module
 ```js
-___darkside.module('#MODULE_NAME', #SOME_FUNCTION)`
+___darkside.register('#MODULE_NAME', #SOME_FUNCTION)`
 ```
 
 ---
@@ -37,25 +37,25 @@ ___darkside.module('#MODULE_NAME', #SOME_FUNCTION)`
 
 #### Extend DOM listeners
 ```js
-___darkside.module('events').init()
+___darkside.modules.events.init()
 ```
 
 #### Roll back to native DOM listeners
 ```js
-___darkside.module('events').destroy()
+___darkside.modules.events.destroy()
 ```
 
 #### Get info about number of listeners from detached DOM elements
 ```js
-___darkside.module('events').count()
+___darkside.modules.events.count()
 ```
 
 #### Get detached DOM elements
 ```js
-___darkside.module('events').elements()
+___darkside.modules.events.elements()
 ```
 
 #### Remove detached DOM elements and it's listeners
 ```js
-___darkside.module('events').garbageCollector()
+___darkside.modules.events.garbageCollector()
 ```

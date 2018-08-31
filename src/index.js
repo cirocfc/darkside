@@ -1,8 +1,6 @@
-import Debug from './debug';
-import Events from './events';
-import Darkside from './main';
-
-// import events from './module.events';
+import Debug from './module.debug';
+import Events from './module.events';
+import Darkside from './module.main';
 
 (function (global) {
   // Create debugger
@@ -13,7 +11,7 @@ import Darkside from './main';
 
   // Register events module
   const events = new Events(global, debug);
-  darkside.module('events', events);
+  darkside.register('events', events);
 
   // Register on global
   global.___darkside = darkside;

@@ -27,12 +27,13 @@ export default class Darkside {
     this._debug.info('Darkside - Main - All modules destroyed!');
   }
 
-  module(name, dModule) {
-    if (dModule === undefined) {
-      return this.modules[name];
+  register(name, module) {
+    if (!name || !module) {
+      this._debug.warn('Darkside - Main - Could not register module!');
+      return;
     }
 
-    this.modules[name] = dModule;
+    this.modules[name] = module;
     this._debug.info('Darkside - Main - Registered module ' + name + '!');
   }
 

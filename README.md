@@ -52,7 +52,7 @@ ___darkside.module('events').count()
 
 #### Get detached DOM elements
 ```js
-___darkside.module('events').elements
+___darkside.module('events').elements()
 ```
 
 #### Remove detached DOM elements and it's listeners

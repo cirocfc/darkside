@@ -4,7 +4,7 @@ export default class Darkside {
       throw 'Darkside - Main - No global was provided!';
     }
 
-    this.debug = debug;
+    this._debug = debug;
     this.global = global;
     this.active = false;
     this.modules = {};
@@ -12,19 +12,19 @@ export default class Darkside {
 
   init() {
     if (this.active) {
-      this.debug.info('Darkside - Main - Already initialized!');
+      this._debug.info('Darkside - Main - Already initialized!');
       return;
     }
 
     Object.keys(this.modules).forEach(moduleName => this.modules[moduleName].init && this.modules[moduleName].init());
     this.active = true;
-    this.debug.info('Darkside - Main - All modules initialized!');
+    this._debug.info('Darkside - Main - All modules initialized!');
   }
 
   destroy() {
     Object.keys(this.modules).forEach(moduleName => this.modules[moduleName].destroy && this.modules[moduleName].destroy());
     delete this.modules;
-    this.debug.info('Darkside - Main - All modules destroyed!');
+    this._debug.info('Darkside - Main - All modules destroyed!');
   }
 
   module(name, dModule) {
@@ -33,12 +33,12 @@ export default class Darkside {
     }
 
     this.modules[name] = dModule;
-    this.debug.info('Darkside - Main - Registered module ' + name + '!');
+    this._debug.info('Darkside - Main - Registered module ' + name + '!');
   }
 
-  toggleDebugger(active) {
-    Object.keys(this.debug).forEach(key => {
-      this.debug[key] = active === true ?
+  debug(active) {
+    Object.keys(this._debug).forEach(key => {
+      this._debug[key] = active === true ?
         function () {
           this.global.console[key].apply(this.global.console, arguments);
         }.bind(this) : function () { };

@@ -1,0 +1,28 @@
+{
+  "name": "darkside",
+  "version": "0.0.1",
+  "scripts": {
+    "lint": "eslint src/**.js --fix",
+    "build": "eslint src/**.js",
+    "build:production": "rollup -c"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cirocfc/darkside.git"
+  },
+  "author": "Ciro Ferreira da Cruz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cirocfc/darkside/issues"
+  },
+  "homepage": "https://github.com/cirocfc/darkside#readme",
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "eslint": "^5.4.0",
+    "rollup": "^0.65.0",
+    "rollup-plugin-babel": "^4.0.2",
+    "rollup-plugin-uglify": "^5.0.1"
+  }
+}

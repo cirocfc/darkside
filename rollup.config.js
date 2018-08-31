@@ -22,6 +22,9 @@ export default {
     }),
     uglify({
       mangle: false,
+      output: {
+        comments: 'some'
+      }
     })
   ],
   watch: {

@@ -1,53 +1,58 @@
-export default class Angular {
-  constructor(global, debug) {
-    this.debug = debug;
-    this.global = global;
-    this.destroyers = [];
-    this.rootScope = null;
-    this.rootScopeNew = null;
-  }
+export default function Angular(g, d) {
+  let global = g;
+  let debug = d;
+  let rootScope = null;
+  let rootScopeNew = null;
+  let destroyers = [];
+  let active = false;
 
-  init($rootScope) {
-    if (!this.global || !this.global.jQuery || !$rootScope || !this.global.angular) {
-      this.debug.error('Darkside - Angular - Missing dependencies!');
+  this.init = ($rootScope) => {
+    if (active) {
+      debug.info('Darkside - Angular - Already initialized!');
       return;
     }
 
-    this.rootScope = $rootScope;
-    this.rootScopeNew = $rootScope.$new;
+    if (!global || !global.jQuery || !$rootScope || !global.angular) {
+      debug.error('Darkside - Angular - Missing dependencies!');
+      return;
+    }
+
+    active = true;
+    rootScope = $rootScope;
+    rootScopeNew = $rootScope.$new;
 
     $rootScope.$new = function () {
-      const $createdScope = this.rootScopeNew.apply(this, arguments);
+      const $createdScope = rootScopeNew.apply(this, arguments);
 
-      this.destroyers.push(
+      destroyers.push(
         $createdScope.$on('$destroy', function () {
           setTimeout(() => {
             $createdScope.$$destroyed = false;
             $createdScope.$destroy();
           }, 0);
 
-          let cache = this.global.jQuery.cache || {};
+          let cache = global.jQuery.cache || {};
           let keys = Object.keys(cache);
           keys.forEach(key => {
             const value = cache[key];
             if (value && value.data && Object.keys(value.data).length === 0) {
               delete cache[key];
-              this.debug('Darkside - AngularJS - Removed cached scope!');
+              debug.info('Darkside - AngularJS - Removed cached scope!');
             }
           });
         })
-      ).bind(this);
+      );
 
       return $createdScope;
     };
 
-    this.debug.warn('Darkside - AngularJS - This will proxy new $scope\'s registration!');
-    this.debug.info('Darkside - AngularJS - Initialized!');
-  }
+    debug.warn('Darkside - AngularJS - This will proxy new $scope\'s registration!');
+    debug.info('Darkside - AngularJS - Initialized!');
+  };
 
-  destroy() {
-    this.rootScope && (this.rootScope.$new = this.rootScopeNew);
-    this.destroyers.forEach(destroyFn => destroyFn());
+  this.destroy = () => {
+    rootScope && (rootScope.$new = rootScopeNew);
+    destroyers.forEach(destroyFn => destroyFn());
     this.destroyers = null;
-  }
+  };
 }
